@@ -166,4 +166,4 @@ routes/
 
 ## Credits
 
-- Zakia Sultana
+- Zakia Sultana and Hannah Melo
