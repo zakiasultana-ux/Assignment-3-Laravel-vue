@@ -27,7 +27,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         /** @var User $user */
-        $user = Auth::user();
+       // $user = Auth::user();
         $user->tokens()->whereName('login_token')->delete();
         $token = $user->createToken('login_token', ['*']);
 
