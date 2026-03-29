@@ -12,8 +12,8 @@ class Character extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'actor_name',
+        'name', //here is the name of the character in the show
+        'actor_name', //here we have the real name of the person
         'occupation',
         'bio',
         'catchphrase',
