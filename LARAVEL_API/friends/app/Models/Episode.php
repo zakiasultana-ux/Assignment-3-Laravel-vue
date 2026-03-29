@@ -15,9 +15,9 @@ class Episode extends Model
         'title',
         'season_number',
         'episode_number',
-        'description',
+        'description', //describes how was the episode
         'air_year',
-        'imdb_rating',
+        'imdb_rating', //the rating of the episode
         'director',
         'featured_character_id',
     ];
