@@ -175,8 +175,7 @@ main {
     overflow: hidden;
     cursor: pointer;
     transition: transform .3s, box-shadow .3s;
-    opacity: 0;
-    transform: translateY(24px);
+    animation: fadeSlideUp .5s ease forwards;
 
     &:hover {
         transform: translateY(-6px) scale(1.02);
@@ -300,12 +299,10 @@ main {
     border-radius: a.$radius;
     box-shadow: a.$shadow;
     padding: 1.25rem 1.5rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
     gap: 1.25rem;
-    opacity: 0;
-    transform: translateX(-20px);
+    animation: fadeSlideLeft .5s ease forwards;
     transition: transform .3s, box-shadow .3s;
 
     &:hover {
@@ -328,6 +325,9 @@ main {
 }
 
 .ep-info {
+    flex: 1;
+    min-width: 0;
+
     h3 {
         font-family: 'Raleway', sans-serif;
         font-weight: 700;
@@ -371,8 +371,7 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
-    opacity: 0;
-    transform: scale(.95);
+    animation: fadeScaleIn .5s ease forwards;
     transition: transform .3s, box-shadow .3s;
 
     &:hover {
@@ -535,6 +534,21 @@ main {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeScaleIn {
+    from { opacity: 0; transform: scale(.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 // ── FOOTER ────────────────────────────────────────────────────────────────────
 footer {
     text-align: center;
@@ -550,7 +564,7 @@ footer {
 @media (max-width: 600px) {
     .hero h1 { font-size: 2rem; }
     nav { display: none; }
-    .episode-card { grid-template-columns: 1fr; }
+    .episode-card { flex-direction: column; align-items: stretch; }
     .ep-rating { text-align: left; }
 }
 
