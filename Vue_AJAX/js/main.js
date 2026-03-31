@@ -23,7 +23,7 @@ const app = Vue.createApp({
         return {
             // Friends data
             activeTab: 'episodes',
-            
+
             // Episodes
             allEpisodes: [],
             filteredEpisodes: [],
@@ -76,19 +76,12 @@ const app = Vue.createApp({
         this.fetchCharacters();
     },
 
-    watch: {
-        // Lazy load tabs
-        activeTab(tab) {
-            if (tab === 'episodes' && !this.episodes.length) {
-                this.fetchData('episodes');
-            }
-            if (tab === 'relationships' && !this.relationships.length) {
-                this.fetchData('relationships');
-            }
-        }
-    },
-
     methods: {
+        // ── Tab switching ────────────────────────────
+        switchTab(tab) {
+            this.activeTab = tab;
+        },
+
         // EPISODES
         fetchEpisodes() {
             this.loadingEpisodes = true;
@@ -108,6 +101,7 @@ const app = Vue.createApp({
             if (this.episodeSeason)      params.set('season', this.episodeSeason);
             if (this.episodeMinRating)   params.set('min_rating', this.episodeMinRating);
             if (this.episodeCharacterId) params.set('featured_character_id', this.episodeCharacterId);
+            this.episodeError = null;
             apiFetch(`${BASE_URL}/episodes?${params.toString()}`)
                 .then(json => {
                     this.filteredEpisodes = json.data || [];
@@ -138,6 +132,7 @@ const app = Vue.createApp({
                 .catch(err => { this.episodeDetailError = err.message; })
                 .finally(() => { this.loadingEpisodeDetail = false; });
         },
+
         // CHARACTERS
         fetchCharacters() {
             this.loadingCharacters = true;
@@ -159,6 +154,7 @@ const app = Vue.createApp({
             if (this.characterSearch)     params.set('search', this.characterSearch);
             if (this.characterOccupation) params.set('occupation', this.characterOccupation);
             if (this.characterActor)      params.set('actor_name', this.characterActor);
+            this.characterError = null;
             apiFetch(`${BASE_URL}/characters?${params.toString()}`)
                 .then(json => {
                     this.filteredCharacters = json.data || [];
@@ -189,6 +185,7 @@ const app = Vue.createApp({
                 .catch(err => { this.characterDetailError = err.message; })
                 .finally(() => { this.loadingCharacterDetail = false; });
         },
+
         viewCharacterFromEpisode(character) {
             this.switchTab('characters');
             this.$nextTick(() => this.selectCharacter(character.id));
@@ -198,6 +195,7 @@ const app = Vue.createApp({
             this.switchTab('episodes');
             this.$nextTick(() => this.selectEpisode(ep.id));
         },
+
         // GSAP animations
         animateList(parentRef, childSelector) {
             if (!parentRef) return;
@@ -208,6 +206,7 @@ const app = Vue.createApp({
                 { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: 'power1.out' }
             );
         },
+
         // ── Generic API fetch (Friends) ─────────────
         fetchData(resource) {
             this.loading[resource] = true;

@@ -671,6 +671,95 @@ select.filter-input {
     }
 }
 
+// ── DETAIL PANEL ─────────────────────────────────────────────────────────────
+.detail-panel {
+    background: a.$card-bg;
+    border-radius: a.$radius;
+    box-shadow: a.$shadow;
+    padding: 2rem;
+    margin-top: 2rem;
+
+    h2 {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 800;
+        font-size: 1.6rem;
+        color: a.$dark;
+        margin-bottom: .75rem;
+    }
+}
+
+.detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.detail-description {
+    color: a.$muted;
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    font-size: .95rem;
+}
+
+.detail-info {
+    font-size: .9rem;
+    color: a.$text;
+    margin-bottom: .5rem;
+
+    strong {
+        color: a.$dark;
+    }
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.detail-featured {
+    margin-top: 1rem;
+}
+
+.featured-char {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: rgba(107, 91, 205, .06);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .2s;
+
+    &:hover {
+        background: rgba(107, 91, 205, .12);
+    }
+
+    strong {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        color: a.$dark;
+    }
+}
+
+.char-avatar-sm {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: a.$purple;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+
 // ── RESPONSIVE EXTRAS ─────────────────────────────────────────────────────────
 @media (max-width: 600px) {
     .filters-bar {
@@ -681,5 +770,14 @@ select.filter-input {
     .filter-input {
         min-width: unset;
         width: 100%;
+    }
+
+    .detail-panel {
+        padding: 1.25rem;
+    }
+
+    .detail-header {
+        flex-direction: column;
+        text-align: center;
     }
 }

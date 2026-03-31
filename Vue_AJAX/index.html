@@ -26,10 +26,8 @@
     <header>
         <div class="logo">FR<span>I</span>ENDS <span class="logo-sub">DB</span></div>
         <nav>
-            <!-- Switch active tab -->
-            <button :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">Characters</button>
-            <button :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">Episodes</button>
-            <button :class="{ active: activeTab === 'relationships' }" @click="activeTab = 'relationships'">Relationships</button>
+            <button :class="{ active: activeTab === 'episodes' }" @click="switchTab('episodes')">Episodes</button>
+            <button :class="{ active: activeTab === 'characters' }" @click="switchTab('characters')">Characters</button>
         </nav>
     </header>
 
@@ -37,151 +35,246 @@
     <section class="hero">
         <p class="hero-eyebrow" ref="eyebrow">The One With All The Data</p>
         <h1 ref="heroTitle">The <em>Friends</em> Universe</h1>
-        <p class="hero-sub" ref="heroSub">Explore characters, episodes, and relationships.</p>
+        <p class="hero-sub" ref="heroSub">Explore characters and episodes from the beloved TV series.</p>
     </section>
 
     <!-- Tabs bar -->
     <div class="tabs-bar">
-        <button class="tab-btn" :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">👤 Characters</button>
-        <button class="tab-btn" :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">🎬 Episodes</button>
-        <button class="tab-btn" :class="{ active: activeTab === 'relationships' }" @click="activeTab = 'relationships'">💛 Relationships</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'episodes' }" @click="switchTab('episodes')">🎬 Episodes</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'characters' }" @click="switchTab('characters')">👤 Characters</button>
     </div>
 
     <main>
 
-        <!-- Characters -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- EPISODES TAB                                                       -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <section v-if="activeTab === 'episodes'">
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <input class="filter-input" type="text"
+                       placeholder="Search episodes…"
+                       v-model="episodeSearch" @input="filterEpisodes">
+
+                <select class="filter-input" v-model="episodeSeason" @change="filterEpisodes">
+                    <option value="">All Seasons</option>
+                    <option v-for="s in 10" :key="s" :value="s">Season {{ s }}</option>
+                </select>
+
+                <input class="filter-input" type="number"
+                       placeholder="Min Rating"
+                       v-model="episodeMinRating" @input="filterEpisodes"
+                       min="0" max="10" step="0.1">
+
+                <select class="filter-input" v-model="episodeCharacterId" @change="filterEpisodes">
+                    <option value="">All Characters</option>
+                    <option v-for="c in mainCharacters" :key="c.id" :value="c.id">{{ c.name }}</option>
+                </select>
+            </div>
+
+            <!-- Loading -->
+            <div v-if="loadingEpisodes" class="state-msg">
+                <div class="spinner"></div>
+                <h3>Loading episodes…</h3>
+            </div>
+
+            <!-- Error -->
+            <div v-else-if="episodeError" class="state-msg">
+                <div class="icon">⚠️</div>
+                <h3>Could not load episodes</h3>
+                <p>{{ episodeError }}</p>
+            </div>
+
+            <!-- Episodes list -->
+            <div v-else ref="episodeList" class="episodes-list">
+                <div class="episode-card"
+                     v-for="ep in filteredEpisodes" :key="ep.id"
+                     @click="selectEpisode(ep.id)"
+                     style="cursor:pointer">
+
+                    <div class="ep-badge">
+                        S{{ ep.season_number }}<br>E{{ ep.episode_number }}
+                    </div>
+
+                    <div class="ep-info">
+                        <h3>{{ ep.title }}</h3>
+                        <p>{{ ep.description }}</p>
+                        <div class="ep-meta" v-if="ep.director">
+                            Dir: {{ ep.director }} · {{ ep.air_year }}
+                        </div>
+                    </div>
+
+                    <div class="ep-rating" v-if="ep.imdb_rating">
+                        <div class="stars">{{ ratingStars(ep.imdb_rating) }}</div>
+                        <div class="rating-num">{{ ep.imdb_rating }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Episode detail loading -->
+            <div v-if="loadingEpisodeDetail" class="state-msg">
+                <div class="spinner"></div>
+                <h3>Loading episode details…</h3>
+            </div>
+
+            <!-- Episode detail error -->
+            <div v-if="episodeDetailError" class="state-msg">
+                <div class="icon">⚠️</div>
+                <h3>Error</h3>
+                <p>{{ episodeDetailError }}</p>
+            </div>
+
+            <!-- Episode detail panel -->
+            <div v-if="selectedEpisode" ref="episodeDetail" class="detail-panel">
+                <h2>{{ selectedEpisode.title }}</h2>
+
+                <div class="detail-meta">
+                    <span class="ep-badge">S{{ selectedEpisode.season_number }} E{{ selectedEpisode.episode_number }}</span>
+                    <span v-if="selectedEpisode.imdb_rating" class="stars">
+                        {{ ratingStars(selectedEpisode.imdb_rating) }} {{ selectedEpisode.imdb_rating }}
+                    </span>
+                </div>
+
+                <p class="detail-description">{{ selectedEpisode.description }}</p>
+
+                <div class="detail-info" v-if="selectedEpisode.director">
+                    <strong>Director:</strong> {{ selectedEpisode.director }}
+                </div>
+                <div class="detail-info" v-if="selectedEpisode.air_year">
+                    <strong>Year:</strong> {{ selectedEpisode.air_year }}
+                </div>
+
+                <!-- Featured character -->
+                <div v-if="selectedEpisode.featured_character" class="detail-featured">
+                    <h3 class="modal-section-title">Featured Character</h3>
+                    <div class="featured-char" @click="viewCharacterFromEpisode(selectedEpisode.featured_character)">
+                        <div class="char-avatar-sm">
+                            {{ initials(selectedEpisode.featured_character.name) }}
+                        </div>
+                        <div>
+                            <strong>{{ selectedEpisode.featured_character.name }}</strong>
+                            <div class="char-actor">{{ selectedEpisode.featured_character.actor_name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="close-btn" @click="selectedEpisode = null">Close</button>
+            </div>
+
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- CHARACTERS TAB                                                     -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
         <section v-if="activeTab === 'characters'">
 
-            <!-- Loading / error states -->
-            <div v-if="loading.characters" class="state-msg">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <input class="filter-input" type="text"
+                       placeholder="Search characters…"
+                       v-model="characterSearch" @input="filterCharacters">
+
+                <input class="filter-input" type="text"
+                       placeholder="Occupation…"
+                       v-model="characterOccupation" @input="filterCharacters">
+
+                <input class="filter-input" type="text"
+                       placeholder="Actor name…"
+                       v-model="characterActor" @input="filterCharacters">
+            </div>
+
+            <!-- Loading -->
+            <div v-if="loadingCharacters" class="state-msg">
                 <div class="spinner"></div>
                 <h3>Loading characters…</h3>
             </div>
 
-            <div v-else-if="error.characters" class="state-msg">
+            <!-- Error -->
+            <div v-else-if="characterError" class="state-msg">
                 <div class="icon">⚠️</div>
                 <h3>Could not load characters</h3>
-                <p>{{ error.characters }}</p>
+                <p>{{ characterError }}</p>
             </div>
 
-            <!-- Characters list -->
-            <div v-else class="characters-grid">
-                <div
-                    class="character-card"
-                    v-for="char in characters"
-                    :key="char.id"
-                    @click="openModal(char)"
-                >
+            <!-- Character grid -->
+            <div v-else ref="characterGrid" class="characters-grid">
+                <div class="character-card char-card"
+                     v-for="char in filteredCharacters" :key="char.id"
+                     @click="selectCharacter(char.id)">
+
                     <div class="char-avatar">
                         <span class="initials">{{ initials(char.name) }}</span>
                     </div>
 
                     <div class="char-body">
                         <div class="char-name">{{ char.name }}</div>
-                        <div class="char-job">{{ char.job }}</div>
-                        <p class="char-desc">{{ char.short_description }}</p>
-
-                        <!-- Personality tags -->
-                        <div class="personality-tags">
-                            <span class="tag" v-for="trait in parsedPersonality(char.personality)" :key="trait">
-                                {{ trait }}
-                            </span>
-                        </div>
+                        <div class="char-actor">{{ char.actor_name }}</div>
+                        <div class="char-job">{{ char.occupation }}</div>
+                        <p class="char-desc">{{ char.bio }}</p>
+                        <span v-if="char.catchphrase" class="tag">"{{ char.catchphrase }}"</span>
+                        <span v-if="char.episodes_count" class="badge-main-cast">
+                            {{ char.episodes_count }} episodes
+                        </span>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Episodes -->
-        <section v-if="activeTab === 'episodes'">
-
-            <!-- Loading / error states -->
-            <div v-if="loading.episodes" class="state-msg">
+            <!-- Character detail loading -->
+            <div v-if="loadingCharacterDetail" class="state-msg">
                 <div class="spinner"></div>
-                <h3>Loading episodes…</h3>
+                <h3>Loading character details…</h3>
             </div>
 
-            <div v-else-if="error.episodes" class="state-msg">
+            <!-- Character detail error -->
+            <div v-if="characterDetailError" class="state-msg">
                 <div class="icon">⚠️</div>
-                <h3>Could not load episodes</h3>
-                <p>{{ error.episodes }}</p>
+                <h3>Error</h3>
+                <p>{{ characterDetailError }}</p>
             </div>
 
-            <!-- Episodes list -->
-            <div v-else class="episodes-list">
-                <div class="episode-card" v-for="ep in episodes" :key="ep.id">
-                    <div class="ep-badge">
-                        S{{ ep.season }}<br>E{{ ep.episode_number }}
-                    </div>
-
-                    <div class="ep-info">
-                        <h3>{{ ep.title }}</h3>
-                        <p>{{ ep.summary }}</p>
-                    </div>
-
-                    <!-- Rating -->
-                    <div class="ep-rating">
-                        <div class="stars">{{ ratingStars(ep.rating) }}</div>
-                        <div class="rating-num">{{ ep.rating }}</div>
+            <!-- Character detail panel -->
+            <div v-if="selectedCharacter" ref="characterDetail" class="detail-panel">
+                <div class="detail-header">
+                    <div class="modal-avatar">{{ initials(selectedCharacter.name) }}</div>
+                    <div>
+                        <h2>{{ selectedCharacter.name }}</h2>
+                        <div class="char-actor">Played by {{ selectedCharacter.actor_name }}</div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Relationships -->
-        <section v-if="activeTab === 'relationships'">
-
-            <!-- Loading / error states -->
-            <div v-if="loading.relationships" class="state-msg">
-                <div class="spinner"></div>
-                <h3>Loading relationships…</h3>
-            </div>
-
-            <div v-else-if="error.relationships" class="state-msg">
-                <div class="icon">⚠️</div>
-                <h3>Could not load relationships</h3>
-                <p>{{ error.relationships }}</p>
-            </div>
-
-            <!-- Relationships list -->
-            <div v-else class="relations-grid">
-                <div class="relation-card" v-for="rel in relationships" :key="rel.id">
-                    <div class="rel-icon">{{ relationIcon(rel.status) }}</div>
-
-                    <div class="rel-info">
-                        <h3>{{ rel.character_1 }} &amp; {{ rel.character_2 }}</h3>
-                        <span class="rel-status">{{ rel.status }}</span>
-                    </div>
+                <div class="modal-occupation" v-if="selectedCharacter.occupation">
+                    {{ selectedCharacter.occupation }}
                 </div>
+
+                <p class="modal-description">{{ selectedCharacter.bio }}</p>
+
+                <div v-if="selectedCharacter.catchphrase" class="detail-info">
+                    <strong>Catchphrase:</strong> "{{ selectedCharacter.catchphrase }}"
+                </div>
+
+                <!-- Episodes this character is featured in -->
+                <div v-if="selectedCharacter.episodes && selectedCharacter.episodes.length">
+                    <h3 class="modal-section-title">
+                        Episodes ({{ selectedCharacter.episodes.length }})
+                    </h3>
+                    <ul class="modal-episodes-list">
+                        <li v-for="ep in selectedCharacter.episodes" :key="ep.id"
+                            class="modal-episode-item"
+                            @click="switchToEpisode(ep)"
+                            style="cursor:pointer">
+                            <span class="ep-badge-sm">S{{ ep.season_number }}E{{ ep.episode_number }}</span>
+                            <span>{{ ep.title }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="close-btn" @click="selectedCharacter = null">Close</button>
             </div>
+
         </section>
 
     </main>
-
-    <!-- Character modal -->
-    <div class="modal-overlay" v-if="selectedChar" @click.self="closeModal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-avatar">{{ initials(selectedChar.name) }}</div>
-                <div class="modal-title">
-                    <h2>{{ selectedChar.name }}</h2>
-                    <p>{{ selectedChar.job }}</p>
-                </div>
-            </div>
-
-            <div class="modal-body">
-                <p>{{ selectedChar.short_description }}</p>
-
-                <div class="personality-tags">
-                    <span class="tag" v-for="trait in parsedPersonality(selectedChar.personality)" :key="trait">
-                        {{ trait }}
-                    </span>
-                </div>
-
-                <button class="close-btn" @click="closeModal">Close</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer>
