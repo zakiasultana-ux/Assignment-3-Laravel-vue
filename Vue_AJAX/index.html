@@ -68,7 +68,7 @@
             <div v-else class="characters-grid">
                 <div
                     class="character-card"
-                    v-for="char in characters"
+                    v-for="char in filteredCharacters"
                     :key="char.id"
                     @click="openModal(char)"
                 >
@@ -116,7 +116,7 @@
 
             <!-- Episodes list -->
             <div v-else class="episodes-list">
-                <div class="episode-card" v-for="ep in episodes" :key="ep.id">
+                <div class="episode-card" v-for="ep in filteredEpisodes" :key="ep.id">
                     <img
                         v-if="ep.image_url"
                         class="ep-image"

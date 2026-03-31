@@ -177,7 +177,8 @@ main {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
-  animation: fadeSlideUp 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(24px);
 }
 .character-card:hover {
   transform: translateY(-6px) scale(1.02);
@@ -300,7 +301,8 @@ main {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  animation: fadeSlideLeft 0.5s ease forwards;
+  opacity: 0;
+  transform: translateX(-20px);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .episode-card:hover {
@@ -367,7 +369,8 @@ main {
   display: flex;
   align-items: center;
   gap: 1rem;
-  animation: fadeScaleIn 0.5s ease forwards;
+  opacity: 0;
+  transform: scale(0.95);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .relation-card:hover {
@@ -528,36 +531,6 @@ main {
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes fadeSlideLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes fadeScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 footer {
