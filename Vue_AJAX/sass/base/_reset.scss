@@ -1,0 +1,22 @@
+@use '../abstracts' as a;
+
+// ── RESET & BASE ──────────────────────────────────────────────────────────────
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background: a.$cream;
+    color: a.$text;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
