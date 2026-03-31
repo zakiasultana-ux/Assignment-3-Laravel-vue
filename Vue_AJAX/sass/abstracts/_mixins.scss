@@ -1,52 +1,47 @@
-
-//Mixins
+// ── Mixins ────────────────────────────────────────────────────────────────────
 
 @mixin rotated($radius) {
-      -webkit-transform: rotate($radius);
-      -ms-transform: rotate($radius);
-       transform: rotate($radius);
- }
- 
+    -webkit-transform: rotate($radius);
+    -ms-transform: rotate($radius);
+    transform: rotate($radius);
+}
 
-//flex box mixins
+// Flexbox helpers
 
 @mixin flex-column {
-      display: flex;
-      flex-direction: column;
-}
-    
-@mixin flex-center {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-}
-    
-@mixin flex-center-column {
-      @include flex-center;
-      flex-direction: column;
-}
-    
-@mixin flex-center-vert {
-      display: flex;
-      align-items: center;
-}
-    
-@mixin flex-center-horiz {
-      display: flex;
-      justify-content: center;
+    display: flex;
+    flex-direction: column;
 }
 
-//fonts
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-center-column {
+    @include flex-center;
+    flex-direction: column;
+}
+
+@mixin flex-center-vert {
+    display: flex;
+    align-items: center;
+}
+
+@mixin flex-center-horiz {
+    display: flex;
+    justify-content: center;
+}
+
+// Custom font-face helper
 
 @mixin fontFace($font-family, $file-path) {
-      @font-face {
-          font: {
-              family: $font-family;
-              weight: normal;
-              style: normal;
-          }
-          //Modern Browsers
-          src: url('#{$file-path}.woff') format('woff'),
-          url('#{$file-path}.woff2') format('woff2')
-      }
-  }
+    @font-face {
+        font-family: $font-family;
+        font-weight: normal;
+        font-style: normal;
+        src: url('#{$file-path}.woff') format('woff'),
+             url('#{$file-path}.woff2') format('woff2');
+    }
+}
