@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+    <title>Friends DB</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato%7CRaleway" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <script defer src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">FR<span>I</span>ENDS <span class="logo-sub">DB</span></div>
+        <nav>
+            <button :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">Characters</button>
+            <button :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">Episodes</button>
+            <button :class="{ active: activeTab === 'relationships' }" @click="activeTab = 'relationships'">Relationships</button>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <p class="hero-eyebrow" ref="eyebrow">The One With All The Data</p>
+        <h1 ref="heroTitle">The <em>Friends</em> Universe</h1>
+        <p class="hero-sub" ref="heroSub">Explore characters, iconic episodes, and the relationships that made Central Perk famous.</p>
+    </section>
+
+    <!-- TABS BAR -->
+    <div class="tabs-bar">
+        <button class="tab-btn" :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">👤 Characters</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">🎬 Episodes</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'relationships' }" @click="activeTab = 'relationships'">💛 Relationships</button>
+    </div>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- CHARACTERS TAB -->
+        <section v-if="activeTab === 'characters'">
+            <div class="section-header">
+                <h2>The Gang</h2>
+                <p>Six friends. One couch. Endless chaos.</p>
+            </div>
+
+            <div v-if="loading.characters" class="state-msg">
+                <div class="spinner"></div>
+                <h3>Loading characters…</h3>
+            </div>
+
+            <div v-else-if="error.characters" class="state-msg">
+                <div class="icon">⚠️</div>
+                <h3>Could not load characters</h3>
+                <p>{{ error.characters }}</p>
+            </div>
+
+            <div v-else class="characters-grid" ref="charGrid">
+                <div
+                    class="character-card"
+                    v-for="char in characters"
+                    :key="char.id"
+                    @click="openModal(char)"
+                >
+                    <div class="char-avatar">
+                        <span class="initials">{{ initials(char.name) }}</span>
+                    </div>
+                    <div class="char-body">
+                        <div class="char-name">{{ char.name }}</div>
+                        <div class="char-job">{{ char.job }}</div>
+                        <p class="char-desc">{{ char.short_description }}</p>
+                        <div class="personality-tags">
+                            <span class="tag" v-for="trait in parsedPersonality(char.personality)" :key="trait">
+                                {{ trait }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPISODES TAB -->
+        <section v-if="activeTab === 'episodes'">
+            <div class="section-header">
+                <h2>Iconic Episodes</h2>
+                <p>The ones you always go back to.</p>
+            </div>
+
+            <div v-if="loading.episodes" class="state-msg">
+                <div class="spinner"></div>
+                <h3>Loading episodes…</h3>
+            </div>
+
+            <div v-else-if="error.episodes" class="state-msg">
+                <div class="icon">⚠️</div>
+                <h3>Could not load episodes</h3>
+                <p>{{ error.episodes }}</p>
+            </div>
+
+            <div v-else class="episodes-list" ref="epList">
+                <div
+                    class="episode-card"
+                    v-for="ep in episodes"
+                    :key="ep.id"
+                >
+                    <div class="ep-badge">
+                        S{{ ep.season }}<br>E{{ ep.episode_number }}
+                    </div>
+                    <div class="ep-info">
+                        <h3>{{ ep.title }}</h3>
+                        <p>{{ ep.summary }}</p>
+                    </div>
+                    <div class="ep-rating">
+                        <div class="stars">{{ ratingStars(ep.rating) }}</div>
+                        <div class="rating-num">{{ ep.rating }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RELATIONSHIPS TAB -->
+        <section v-if="activeTab === 'relationships'">
+            <div class="section-header">
+                <h2>Connections</h2>
+                <p>It'll always be there for you.</p>
+            </div>
+
+            <div v-if="loading.relationships" class="state-msg">
+                <div class="spinner"></div>
+                <h3>Loading relationships…</h3>
+            </div>
+
+            <div v-else-if="error.relationships" class="state-msg">
+                <div class="icon">⚠️</div>
+                <h3>Could not load relationships</h3>
+                <p>{{ error.relationships }}</p>
+            </div>
+
+            <div v-else class="relations-grid" ref="relGrid">
+                <div
+                    class="relation-card"
+                    v-for="rel in relationships"
+                    :key="rel.id"
+                >
+                    <div class="rel-icon">{{ relationIcon(rel.status) }}</div>
+                    <div class="rel-info">
+                        <h3>{{ rel.character_1 }} &amp; {{ rel.character_2 }}</h3>
+                        <span class="rel-status">{{ rel.status }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" v-if="selectedChar" @click.self="closeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-avatar">{{ initials(selectedChar.name) }}</div>
+                <div class="modal-title">
+                    <h2>{{ selectedChar.name }}</h2>
+                    <p>{{ selectedChar.job }}</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>{{ selectedChar.short_description }}</p>
+                <div class="personality-tags">
+                    <span class="tag" v-for="trait in parsedPersonality(selectedChar.personality)" :key="trait">
+                        {{ trait }}
+                    </span>
+                </div>
+                <button class="close-btn" @click="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <strong>Friends DB</strong> · Built with Vue 3 + Laravel API · Season 1–10
+    </footer>
+
+</div>
+
+</body>
+</html>
