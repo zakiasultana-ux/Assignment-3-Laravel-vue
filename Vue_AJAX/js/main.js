@@ -1,83 +1,182 @@
 const app = Vue.createApp({
     data() {
         return {
+            // Friends data
+            activeTab: 'characters',
+            characters: [],
+            episodes: [],
+            relationships: [],
+
+            // Books data
             booksData: [],
-            error: null,
             selectedBooks: null,
-            loadingBooks: true,
-            loadingBookDetails: false,
+
+            // States
+            loading: {
+                characters: true,
+                episodes: false,
+                relationships: false,
+                books: true,
+                bookDetails: false
+            },
+
+            error: {
+                characters: null,
+                episodes: null,
+                relationships: null,
+                books: null
+            },
+
+            selectedChar: null
         };
     },
+
     created() {
+        // Initial loads
+        this.fetchData('characters');
         this.getBooks();
     },
+
+    watch: {
+        // Lazy load tabs
+        activeTab(tab) {
+            if (tab === 'episodes' && !this.episodes.length) {
+                this.fetchData('episodes');
+            }
+            if (tab === 'relationships' && !this.relationships.length) {
+                this.fetchData('relationships');
+            }
+        }
+    },
+
     methods: {
-        getBooks() {
-            console.log("getbooks called, lets make an api call");
-            //will be local host/point to laraval api
-            fetch("http://xp-bar.ca/api/books")
-            .then(res => {
-                if(!res.ok){
-                    throw new Error('failed to fetch the books');
-                }
-                return res.json();
-            })
-            .then(books => {
-                this.booksData = books.data;
-            })
-            .catch(err => {
-                this.error = err.message;
-            })
-            .finally(() => {
-                this.loadingBooks = false;
-            });
+
+        // ── Generic API fetch (Friends) ─────────────
+        fetchData(resource) {
+            this.loading[resource] = true;
+            this.error[resource] = null;
+
+            fetch(`http://localhost/friends/public/api/${resource}`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`Failed to fetch ${resource}`);
+                    return res.json();
+                })
+                .then(data => {
+                    this[resource] = data.data ?? data;
+                })
+                .catch(err => {
+                    this.error[resource] = err.message;
+                })
+                .finally(() => {
+                    this.loading[resource] = false;
+                });
         },
-        getBook(id){
-            console.log(id);
-            this.loadingBookDetails = true;
-            this.error = null;
+
+        // ── Books list ─────────────
+        getBooks() {
+            this.loading.books = true;
+            this.error.books = null;
+
+            fetch("http://xp-bar.ca/api/books")
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch books');
+                    return res.json();
+                })
+                .then(books => {
+                    this.booksData = books.data;
+                })
+                .catch(err => {
+                    this.error.books = err.message;
+                })
+                .finally(() => {
+                    this.loading.books = false;
+                });
+        },
+
+        // ── Book details ─────────────
+        getBook(id) {
+            this.loading.bookDetails = true;
             this.selectedBooks = null;
+            this.error.books = null;
+
             fetch(`http://xp-bar.ca/api/books/${id}`)
-            .then(res => {
-                if(!res.ok){
-                    throw new Error('failed to feacth book details');
-                }
-                return res.json();
-            })
-            .then(book => {
-                if(!book.data){
-                    throw new Error('sorry we are unable to find the book you requested.');
-                }
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch book details');
+                    return res.json();
+                })
+                .then(book => {
+                    const data = book.data;
 
-                const bookData = book.data;
+                    if (!data) {
+                        throw new Error('Book not found');
+                    }
 
-                this.selectedBooks = {
-                    author: bookData.author.name || "not avalable",
-                    published: bookData.published || "not avalable",
-                    description: bookData.description || "not avalable",
-                    image_url: bookData.image_url || ""
-                }
+                    this.selectedBooks = {
+                        author: data.author?.name || "Not available",
+                        published: data.published || "Not available",
+                        description: data.description || "Not available",
+                        image_url: data.image_url || ""
+                    };
 
-                this.$nextTick(() => {
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: 'smooth'
-                    });
+                    // Scroll + animation
+                    this.$nextTick(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
 
-                    gsap.from(this.$refs.bookInfoCon,{
-                        opacity:0,
-                        y: 20,
-                        duration: 2,
-                        ease: "power2.out"
+                        if (window.gsap && this.$refs.bookInfoCon) {
+                            gsap.from(this.$refs.bookInfoCon, {
+                                opacity: 0,
+                                y: 20,
+                                duration: 1
+                            });
+                        }
                     });
                 })
-            })
-            .catch(err => {
-                this.error = err.message;
-            })
-            .finally(() => {
-                this.loadingBookDetails = false;
-            });
+                .catch(err => {
+                    this.error.books = err.message;
+                })
+                .finally(() => {
+                    this.loading.bookDetails = false;
+                });
+        },
+
+        // ── Helpers ─────────────
+        initials(name) {
+            return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        },
+
+        parsedPersonality(p) {
+            if (!p) return [];
+            if (Array.isArray(p)) return p;
+            try { return JSON.parse(p); }
+            catch { return p.split(',').map(s => s.trim()); }
+        },
+
+        ratingStars(r) {
+            const full = Math.round(r / 2);
+            return '★'.repeat(full) + '☆'.repeat(5 - full);
+        },
+
+        relationIcon(status) {
+            const map = {
+                'Romantic': '💕',
+                'Married': '💍',
+                'Best Friends': '🤝',
+                'Siblings': '👫',
+                'Close Friends': '💛',
+            };
+            return map[status] || '🙂';
+        },
+
+        // ── Modal ─────────────
+        openModal(char) {
+            this.selectedChar = char;
+        },
+
+        closeModal() {
+            this.selectedChar = null;
         }
     }
 }).mount("#app");
