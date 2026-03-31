@@ -42,12 +42,15 @@ class CharacterFactory extends Factory
             'JOEY DOESN\'T SHARE FOOD!',
         ];
 
+        $name = $this->faker->name();
+
         return [
-            'name'        => $this->faker->name(),
+            'name'        => $name,
             'actor_name'  => $this->faker->name(),
             'occupation'  => $this->faker->randomElement($occupations),
             'bio'         => $this->faker->paragraph(3),
             'catchphrase' => $this->faker->randomElement($catchphrases),
+            'image_url'   => 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&size=200&background=F7BE38&color=5C2A8F&bold=true',
         ];
     }
 }

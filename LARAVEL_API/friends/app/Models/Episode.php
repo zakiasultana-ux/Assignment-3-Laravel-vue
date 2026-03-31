@@ -20,6 +20,7 @@ class Episode extends Model
         'imdb_rating', //the rating of the episode
         'director',
         'featured_character_id',
+        'image_url',
     ];
 
     /**

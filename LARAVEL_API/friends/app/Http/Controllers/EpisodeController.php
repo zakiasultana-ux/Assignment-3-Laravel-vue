@@ -89,6 +89,7 @@ class EpisodeController extends Controller
             'imdb_rating'            => $request->input('imdb_rating'),
             'director'               => $request->input('director'),
             'featured_character_id'  => $request->input('featured_character_id'),
+            'image_url'              => $request->input('image_url'),
         ]);
 
         $episode->load('featuredCharacter');
@@ -114,6 +115,7 @@ class EpisodeController extends Controller
             'imdb_rating',
             'director',
             'featured_character_id',
+            'image_url',
         ];
 
         foreach ($fields as $field) {
