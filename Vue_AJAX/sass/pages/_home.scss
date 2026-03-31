@@ -1,2 +1,685 @@
-@use '../abstracts' as abstracts;
+@use '../abstracts' as a;
 
+// ── HEADER ────────────────────────────────────────────────────────────────────
+header {
+    background: 
+        linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+        url('../images/friends.png') center / cover no-repeat;
+    background-color: a.$dark;
+
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 24px rgba(0, 0, 0, .35);
+}
+
+.logo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: a.$yellow;
+    letter-spacing: -1px;
+
+    span { color: a.$orange; }
+}
+
+nav {
+    display: flex;
+    gap: .5rem;
+
+    button {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        font-size: .85rem;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        padding: .45rem 1.1rem;
+        border: 2px solid transparent;
+        border-radius: 999px;
+        cursor: pointer;
+        background: transparent;
+        color: #ccc;
+        transition: all .25s;
+
+        &:hover,
+        &.active {
+            border-color: a.$yellow;
+            color: a.$yellow;
+            background: rgba(246, 201, 14, .08);
+        }
+    }
+}
+
+// ── HERO ──────────────────────────────────────────────────────────────────────
+.hero {
+    background: a.$dark;
+    padding: 4rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(107, 91, 205, .35) 0%, transparent 70%);
+        pointer-events: none;
+    }
+}
+
+.hero-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: .8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: a.$yellow;
+    margin-bottom: 1rem;
+    opacity: 0;
+}
+
+.hero h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    opacity: 0;
+
+    em {
+        font-style: normal;
+        color: a.$yellow;
+    }
+}
+
+.hero-sub {
+    color: #9999bb;
+    font-size: 1.05rem;
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    opacity: 0;
+}
+
+// ── TABS BAR ──────────────────────────────────────────────────────────────────
+.tabs-bar {
+    background: a.$mid;
+    display: flex;
+    justify-content: center;
+    gap: .25rem;
+    padding: .75rem 1rem;
+    position: sticky;
+    top: 72px;
+    z-index: 90;
+}
+
+.tab-btn {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    padding: .55rem 1.6rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    background: transparent;
+    color: #aaa;
+    transition: all .25s;
+
+    &.active,
+    &:hover {
+        background: a.$purple;
+        color: #fff;
+    }
+}
+
+// ── MAIN CONTENT ──────────────────────────────────────────────────────────────
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+
+    h2 {
+        font-family: 'Raleway', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: a.$dark;
+    }
+
+    p {
+        color: a.$muted;
+        margin-top: .4rem;
+        font-size: .95rem;
+    }
+}
+
+// ── CHARACTER GRID ────────────────────────────────────────────────────────────
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.character-card {
+    background: linear-gradient(160deg, a.$purple 0%, a.$yellow 100%);
+    border-radius: a.$radius;
+    box-shadow: 0 8px 32px rgba(107, 91, 205, .35);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .3s, box-shadow .3s;
+    opacity: 0;
+    transform: translateY(24px);
+
+    &:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 16px 48px rgba(107, 91, 205, .4);
+    }
+}
+
+.char-avatar {
+    background: a.$purple;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .initials {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 900;
+        font-size: 3rem;
+        color: rgba(255, 255, 255, .9);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+    }
+}
+
+.char-body { padding: 1.25rem; }
+
+.char-name {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #ffffff;
+}
+
+.char-job {
+    font-size: .82rem;
+    color: a.$yellow;
+    font-weight: 600;
+    letter-spacing: .3px;
+    margin: .25rem 0 .75rem;
+    text-transform: uppercase;
+}
+
+.char-desc {
+    font-size: .88rem;
+    color: rgba(255, 255, 255, .75);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.personality-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.tag {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    background: rgba(246, 201, 14, .18);
+    color: a.$yellow;
+    border: 1px solid rgba(246, 201, 14, .35);
+}
+
+// ── EPISODES LIST ─────────────────────────────────────────────────────────────
+.episodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.episode-card {
+    background: a.$card-bg;
+    border-radius: a.$radius;
+    box-shadow: a.$shadow;
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.25rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: transform .3s, box-shadow .3s;
+
+    &:hover {
+        transform: translateX(4px);
+        box-shadow: 0 12px 36px rgba(107, 91, 205, .2);
+    }
+}
+
+.ep-badge {
+    background: a.$purple;
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: .8rem;
+    padding: .35rem .75rem;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 56px;
+    line-height: 1.3;
+}
+
+.ep-info {
+    h3 {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: a.$dark;
+    }
+
+    p {
+        font-size: .85rem;
+        color: a.$muted;
+        margin-top: .25rem;
+    }
+}
+
+.ep-rating { text-align: center; }
+
+.stars {
+    font-size: 1.2rem;
+    color: a.$yellow;
+}
+
+.rating-num {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: a.$dark;
+}
+
+// ── RELATIONSHIPS ─────────────────────────────────────────────────────────────
+.relations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.relation-card {
+    background: a.$card-bg;
+    border-radius: a.$radius;
+    box-shadow: a.$shadow;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    transform: scale(.95);
+    transition: transform .3s, box-shadow .3s;
+
+    &:hover {
+        transform: scale(1.03);
+        box-shadow: 0 12px 36px rgba(107, 91, 205, .2);
+    }
+}
+
+.rel-icon {
+    font-size: 2rem;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, a.$yellow, a.$orange);
+    flex-shrink: 0;
+}
+
+.rel-info {
+    h3 {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        font-size: .95rem;
+        color: a.$dark;
+    }
+}
+
+.rel-status {
+    display: inline-block;
+    margin-top: .35rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    background: rgba(232, 98, 42, .12);
+    color: a.$orange;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 30, .7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal {
+    background: a.$card-bg;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, .3);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, a.$purple, a.$dark);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.modal-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    h2 {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 800;
+        font-size: 1.4rem;
+        color: #fff;
+    }
+
+    p {
+        color: rgba(255, 255, 255, .65);
+        font-size: .85rem;
+        margin-top: .2rem;
+    }
+}
+
+.modal-body {
+    padding: 1.75rem 2rem;
+
+    p {
+        color: a.$muted;
+        line-height: 1.65;
+        margin-bottom: 1rem;
+        font-size: .95rem;
+    }
+
+    .personality-tags { margin-bottom: 1.25rem; }
+}
+
+.close-btn {
+    display: block;
+    width: 100%;
+    padding: .85rem;
+    background: a.$purple;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: .5rem;
+
+    &:hover { background: a.$dark; }
+}
+
+// ── LOADING / ERROR STATES ────────────────────────────────────────────────────
+.state-msg {
+    text-align: center;
+    padding: 4rem 1rem;
+
+    .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    h3 {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: a.$dark;
+    }
+
+    p { color: a.$muted; margin-top: .4rem; font-size: .9rem; }
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(107, 91, 205, .2);
+    border-top-color: a.$purple;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── FOOTER ────────────────────────────────────────────────────────────────────
+footer {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    background: a.$dark;
+    color: #555577;
+    font-size: .85rem;
+
+    strong { color: a.$yellow; }
+}
+
+// ── RESPONSIVE ────────────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    nav { display: none; }
+    .episode-card { grid-template-columns: 1fr; }
+    .ep-rating { text-align: left; }
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────────
+.hidden { display: none !important; }
+
+// ── LOGO SUB-TEXT ─────────────────────────────────────────────────────────────
+.logo-sub {
+    color: #fff;
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+// ── FILTERS BAR ───────────────────────────────────────────────────────────────
+.filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.filter-input {
+    font-family: 'Lato', sans-serif;
+    font-size: .9rem;
+    padding: .55rem 1rem;
+    border: 2px solid #e0daf5;
+    border-radius: 999px;
+    outline: none;
+    background: #fff;
+    color: #1A1A2E;
+    transition: border-color .2s;
+    min-width: 180px;
+
+    &:focus {
+        border-color: #6B5BCD;
+    }
+
+    &[type="number"] {
+        max-width: 160px;
+    }
+}
+
+select.filter-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B5BCD' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .9rem;
+    color: #1A1A2E;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+        accent-color: #6B5BCD;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+}
+
+// ── ACTOR NAME (below char name) ──────────────────────────────────────────────
+.char-actor {
+    font-size: .8rem;
+    color: #7a7a9a;
+    margin-bottom: .2rem;
+    font-style: italic;
+}
+
+// ── MAIN CAST BADGE ───────────────────────────────────────────────────────────
+.badge-main-cast {
+    display: inline-block;
+    margin-top: .5rem;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding: .25rem .65rem;
+    border-radius: 999px;
+    background: rgba(246, 201, 14, .15);
+    color: #b8890a;
+    border: 1px solid rgba(246, 201, 14, .4);
+}
+
+// ── EPISODE META LINE ─────────────────────────────────────────────────────────
+.ep-meta {
+    font-size: .8rem;
+    color: #7a7a9a;
+    margin-top: .4rem;
+}
+
+// ── MODAL EXTRAS ──────────────────────────────────────────────────────────────
+.modal-occupation {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #6B5BCD;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: .5rem;
+}
+
+.modal-description {
+    color: #7a7a9a;
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    font-size: .95rem;
+}
+
+.modal-section-title {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    color: #1A1A2E;
+    margin: 1.25rem 0 .6rem;
+    border-top: 1px solid #f0eef9;
+    padding-top: 1rem;
+}
+
+.modal-episodes-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.modal-episode-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: .88rem;
+    color: #1A1A2E;
+}
+
+.ep-badge-sm {
+    background: #6B5BCD;
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: .72rem;
+    padding: .2rem .5rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+// ── TAB SECTION VISIBILITY ────────────────────────────────────────────────────
+.tab-section {
+    display: block;
+
+    &.hidden {
+        display: none !important;
+    }
+}
+
+// ── RESPONSIVE EXTRAS ─────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-input {
+        min-width: unset;
+        width: 100%;
+    }
+}
