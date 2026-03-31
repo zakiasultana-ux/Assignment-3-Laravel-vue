@@ -105,6 +105,7 @@ const app = Vue.createApp({
             if (this.episodeSeason)      params.set('season', this.episodeSeason);
             if (this.episodeMinRating)   params.set('min_rating', this.episodeMinRating);
             if (this.episodeCharacterId) params.set('featured_character_id', this.episodeCharacterId);
+            this.episodeError = null;
             apiFetch(`${BASE_URL}/episodes?${params.toString()}`)
                 .then(json => {
                     this.filteredEpisodes = json.data || [];
@@ -157,6 +158,7 @@ const app = Vue.createApp({
             if (this.characterSearch)     params.set('search', this.characterSearch);
             if (this.characterOccupation) params.set('occupation', this.characterOccupation);
             if (this.characterActor)      params.set('actor_name', this.characterActor);
+            this.characterError = null;
             apiFetch(`${BASE_URL}/characters?${params.toString()}`)
                 .then(json => {
                     this.filteredCharacters = json.data || [];
