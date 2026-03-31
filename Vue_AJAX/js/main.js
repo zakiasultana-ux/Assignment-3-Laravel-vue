@@ -1,11 +1,54 @@
+const BASE_URL = 'http://127.0.0.1:8000/api';
+
+async function apiFetch(url) {
+    let res;
+    try {
+        res = await fetch(url);
+    } catch (networkErr) {
+        throw new Error('Cannot reach the API server. Is the Laravel backend running?');
+    }
+    const contentType = res.headers.get('Content-Type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error(`Server returned non-JSON response (HTTP ${res.status}). Is the backend running and CORS configured?`);
+    }
+    const json = await res.json();
+    if (!res.ok) {
+        throw new Error(json.message || `Server error: ${res.status}`);
+    }
+    return json;
+}
+
 const app = Vue.createApp({
     data() {
         return {
             // Friends data
-            activeTab: 'characters',
-            characters: [],
-            episodes: [],
-            relationships: [],
+            activeTab: 'episodes',
+
+            // Episodes
+            allEpisodes: [],
+            filteredEpisodes: [],
+            loadingEpisodes: true,
+            episodeError: null,
+            selectedEpisode: null,
+            loadingEpisodeDetail: false,
+            episodeDetailError: null,
+            episodeSearch: '',
+            episodeSeason: '',
+            episodeMinRating: '',
+            episodeCharacterId: '',
+
+            // Characters
+            allCharacters: [],
+            filteredCharacters: [],
+            mainCharacters: [],
+            loadingCharacters: true,
+            characterError: null,
+            selectedCharacter: null,
+            loadingCharacterDetail: false,
+            characterDetailError: null,
+            characterSearch: '',
+            characterOccupation: '',
+            characterActor: '',
 
             // Books data
             booksData: [],
@@ -33,23 +76,138 @@ const app = Vue.createApp({
 
     created() {
         // Initial loads
-        this.fetchData('characters');
-        this.getBooks();
-    },
-
-    watch: {
-        // Lazy load tabs
-        activeTab(tab) {
-            if (tab === 'episodes' && !this.episodes.length) {
-                this.fetchData('episodes');
-            }
-            if (tab === 'relationships' && !this.relationships.length) {
-                this.fetchData('relationships');
-            }
-        }
+        this.fetchEpisodes();
+        this.fetchCharacters();
     },
 
     methods: {
+        // ── Tab switching ────────────────────────────
+        switchTab(tab) {
+            this.activeTab = tab;
+        },
+
+        // EPISODES
+        fetchEpisodes() {
+            this.loadingEpisodes = true;
+            this.episodeError = null;
+            apiFetch(`${BASE_URL}/episodes`)
+                .then(json => {
+                    this.allEpisodes = json.data || [];
+                    this.filteredEpisodes = [...this.allEpisodes];
+                    this.$nextTick(() => this.animateList(this.$refs.episodeList, '.episode-card'));
+                })
+                .catch(err => { this.episodeError = err.message; })
+                .finally(() => { this.loadingEpisodes = false; });
+        },
+        filterEpisodes() {
+            const params = new URLSearchParams();
+            if (this.episodeSearch)      params.set('search', this.episodeSearch);
+            if (this.episodeSeason)      params.set('season', this.episodeSeason);
+            if (this.episodeMinRating)   params.set('min_rating', this.episodeMinRating);
+            if (this.episodeCharacterId) params.set('featured_character_id', this.episodeCharacterId);
+            apiFetch(`${BASE_URL}/episodes?${params.toString()}`)
+                .then(json => {
+                    this.filteredEpisodes = json.data || [];
+                    this.$nextTick(() => this.animateList(this.$refs.episodeList, '.episode-card'));
+                })
+                .catch(err => { this.episodeError = err.message; });
+        },
+
+        selectEpisode(id) {
+            this.loadingEpisodeDetail = true;
+            this.episodeDetailError = null;
+            this.selectedEpisode = null;
+            apiFetch(`${BASE_URL}/episodes/${id}`)
+                .then(json => {
+                    if (!json.data) throw new Error('Episode not found.');
+                    this.selectedEpisode = json.data;
+                    this.$nextTick(() => {
+                        const panel = this.$refs.episodeDetail;
+                        if (panel) {
+                            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            gsap.fromTo(panel,
+                                { opacity: 0, y: 30 },
+                                { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+                            );
+                        }
+                    });
+                })
+                .catch(err => { this.episodeDetailError = err.message; })
+                .finally(() => { this.loadingEpisodeDetail = false; });
+        },
+
+        // CHARACTERS
+        fetchCharacters() {
+            this.loadingCharacters = true;
+            this.characterError = null;
+            apiFetch(`${BASE_URL}/characters`)
+                .then(json => {
+                    this.allCharacters = json.data || [];
+                    this.filteredCharacters = [...this.allCharacters];
+                    // First 6 are the seeded main cast — use for dropdown
+                    this.mainCharacters = this.allCharacters.slice(0, 6);
+                    this.$nextTick(() => this.animateList(this.$refs.characterGrid, '.char-card'));
+                })
+                .catch(err => { this.characterError = err.message; })
+                .finally(() => { this.loadingCharacters = false; });
+        },
+
+        filterCharacters() {
+            const params = new URLSearchParams();
+            if (this.characterSearch)     params.set('search', this.characterSearch);
+            if (this.characterOccupation) params.set('occupation', this.characterOccupation);
+            if (this.characterActor)      params.set('actor_name', this.characterActor);
+            apiFetch(`${BASE_URL}/characters?${params.toString()}`)
+                .then(json => {
+                    this.filteredCharacters = json.data || [];
+                    this.$nextTick(() => this.animateList(this.$refs.characterGrid, '.char-card'));
+                })
+                .catch(err => { this.characterError = err.message; });
+        },
+
+        selectCharacter(id) {
+            this.loadingCharacterDetail = true;
+            this.characterDetailError = null;
+            this.selectedCharacter = null;
+            apiFetch(`${BASE_URL}/characters/${id}`)
+                .then(json => {
+                    if (!json.data) throw new Error('Character not found.');
+                    this.selectedCharacter = json.data;
+                    this.$nextTick(() => {
+                        const panel = this.$refs.characterDetail;
+                        if (panel) {
+                            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            gsap.fromTo(panel,
+                                { opacity: 0, y: 30 },
+                                { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+                            );
+                        }
+                    });
+                })
+                .catch(err => { this.characterDetailError = err.message; })
+                .finally(() => { this.loadingCharacterDetail = false; });
+        },
+
+        viewCharacterFromEpisode(character) {
+            this.switchTab('characters');
+            this.$nextTick(() => this.selectCharacter(character.id));
+        },
+
+        switchToEpisode(ep) {
+            this.switchTab('episodes');
+            this.$nextTick(() => this.selectEpisode(ep.id));
+        },
+
+        // GSAP animations
+        animateList(parentRef, childSelector) {
+            if (!parentRef) return;
+            const items = parentRef.querySelectorAll(childSelector);
+            if (!items.length) return;
+            gsap.fromTo(items,
+                { opacity: 0, y: 15 },
+                { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: 'power1.out' }
+            );
+        },
 
         // ── Generic API fetch (Friends) ─────────────
         fetchData(resource) {
@@ -177,6 +335,7 @@ const app = Vue.createApp({
 
         closeModal() {
             this.selectedChar = null;
-        }
+        },
+
     }
 }).mount("#app");
