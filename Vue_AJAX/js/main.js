@@ -50,10 +50,6 @@ const app = Vue.createApp({
             characterOccupation: '',
             characterActor: '',
 
-            // Books data
-            booksData: [],
-            selectedBooks: null,
-
             // States
             loading: {
                 characters: true,
