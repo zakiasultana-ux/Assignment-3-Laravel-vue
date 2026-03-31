@@ -1,4 +1,4 @@
-http://localhost:8000/api/characters<?php
+<?php
 
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\EpisodeController;
