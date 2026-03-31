@@ -77,6 +77,7 @@ class CharacterController extends Controller
             'occupation'  => $request->input('occupation'),
             'bio'         => $request->input('bio'),
             'catchphrase' => $request->input('catchphrase'),
+            'image_url'   => $request->input('image_url'),
         ]);
 
         return response()->json(['data' => $character], 201);
@@ -91,7 +92,7 @@ class CharacterController extends Controller
      */
     public function update(Request $request, Character $character)
     {
-        $fields = ['name', 'actor_name', 'occupation', 'bio', 'catchphrase'];
+        $fields = ['name', 'actor_name', 'occupation', 'bio', 'catchphrase', 'image_url'];
 
         foreach ($fields as $field) {
             if ($request->has($field)) {

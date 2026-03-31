@@ -68,13 +68,20 @@
             <div v-else class="characters-grid">
                 <div
                     class="character-card"
-                    v-for="char in characters"
+                    v-for="char in filteredCharacters"
                     :key="char.id"
                     @click="openModal(char)"
                 >
-                    <div class="char-avatar">
+                    <div class="char-avatar" v-if="!char.image_url">
                         <span class="initials">{{ initials(char.name) }}</span>
                     </div>
+                    <img
+                        v-else
+                        class="char-image"
+                        :src="char.image_url"
+                        :alt="char.name"
+                        @error="$event.target.style.display='none'"
+                    />
 
                     <div class="char-body">
                         <div class="char-name">{{ char.name }}</div>
@@ -109,20 +116,28 @@
 
             <!-- Episodes list -->
             <div v-else class="episodes-list">
-                <div class="episode-card" v-for="ep in episodes" :key="ep.id">
+                <div class="episode-card" v-for="ep in filteredEpisodes" :key="ep.id">
+                    <img
+                        v-if="ep.image_url"
+                        class="ep-image"
+                        :src="ep.image_url"
+                        :alt="ep.title"
+                        @error="$event.target.style.display='none'"
+                    />
+
                     <div class="ep-badge">
-                        S{{ ep.season }}<br>E{{ ep.episode_number }}
+                        S{{ ep.season_number }}<br>E{{ ep.episode_number }}
                     </div>
 
                     <div class="ep-info">
                         <h3>{{ ep.title }}</h3>
-                        <p>{{ ep.summary }}</p>
+                        <p>{{ ep.description }}</p>
                     </div>
 
                     <!-- Rating -->
                     <div class="ep-rating">
-                        <div class="stars">{{ ratingStars(ep.rating) }}</div>
-                        <div class="rating-num">{{ ep.rating }}</div>
+                        <div class="stars">{{ ratingStars(ep.imdb_rating) }}</div>
+                        <div class="rating-num">{{ ep.imdb_rating }}</div>
                     </div>
                 </div>
             </div>
@@ -162,21 +177,27 @@
     <div class="modal-overlay" v-if="selectedChar" @click.self="closeModal">
         <div class="modal">
             <div class="modal-header">
-                <div class="modal-avatar">{{ initials(selectedChar.name) }}</div>
+                <div class="modal-avatar" v-if="!selectedChar.image_url">{{ initials(selectedChar.name) }}</div>
+                <img
+                    v-else
+                    class="modal-char-image"
+                    :src="selectedChar.image_url"
+                    :alt="selectedChar.name"
+                    @error="$event.target.style.display='none'"
+                />
                 <div class="modal-title">
                     <h2>{{ selectedChar.name }}</h2>
-                    <p>{{ selectedChar.job }}</p>
+                    <p>{{ selectedChar.occupation }}</p>
                 </div>
             </div>
 
             <div class="modal-body">
-                <p>{{ selectedChar.short_description }}</p>
+                <p class="modal-actor">Played by <strong>{{ selectedChar.actor_name }}</strong></p>
+                <p>{{ selectedChar.bio }}</p>
 
-                <div class="personality-tags">
-                    <span class="tag" v-for="trait in parsedPersonality(selectedChar.personality)" :key="trait">
-                        {{ trait }}
-                    </span>
-                </div>
+                <p v-if="selectedChar.catchphrase" class="modal-catchphrase">
+                    "{{ selectedChar.catchphrase }}"
+                </p>
 
                 <button class="close-btn" @click="closeModal">Close</button>
             </div>

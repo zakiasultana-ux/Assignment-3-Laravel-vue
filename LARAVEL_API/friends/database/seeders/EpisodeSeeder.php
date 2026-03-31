@@ -34,6 +34,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.3,
                 'director'              => 'James Burrows',
                 'featured_character_id' => $rachel ? $rachel->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BNDVkYjU0MzctMWRmZi00NTkxLTgwZWEtOWVhYjZlYjllYmU4XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with the Blackout',
@@ -44,6 +45,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.6,
                 'director'              => 'James Burrows',
                 'featured_character_id' => $chandler ? $chandler->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BZDEyMjQ0OTctZGE2MC00ZWY5LThlMGYtMzg4NjgyYjc3OGFlXkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with the Prom Video',
@@ -54,6 +56,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.4,
                 'director'              => 'James Burrows',
                 'featured_character_id' => $ross ? $ross->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BOTUxMzU3MjgtNTlhMy00ZDdlLThiMTYtMzA0MmJhYTY0ZTQ1XkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One Where No One\'s Ready',
@@ -64,6 +67,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.4,
                 'director'              => 'Gail Mancuso',
                 'featured_character_id' => $ross ? $ross->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BOTRhOWQ0NWUtODVmMi00ZmM2LTg1OTItMGRjYTc3ZDdiMjdiXkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with the Morning After',
@@ -74,6 +78,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.3,
                 'director'              => 'James Burrows',
                 'featured_character_id' => $ross ? $ross->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BMjE3MDQ1NDg0OF5BMl5BanBnXkFtZTgwMjY4MjQxMjE@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with the Embryos',
@@ -84,6 +89,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.7,
                 'director'              => 'Kevin S. Bright',
                 'featured_character_id' => $phoebe ? $phoebe->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BNTA1NjI3NjktOWIzMi00MDg3LWJlOWItMTFhYmIxMjliMTdmXkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One Where Ross Finds Out',
@@ -94,6 +100,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.1,
                 'director'              => 'Peter Bonerz',
                 'featured_character_id' => $rachel ? $rachel->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BNmRlZDQ4MzAtNjIwMy00NDQ0LTgxNjAtMDkwZDhhOWI5YjhhXkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One Where Everybody Finds Out',
@@ -104,6 +111,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.7,
                 'director'              => 'Michael Lembeck',
                 'featured_character_id' => $chandler ? $chandler->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BMjA1ODM2NDkzNl5BMl5BanBnXkFtZTgwMzY4MjQxMjE@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One Where Ross Got High',
@@ -114,6 +122,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.3,
                 'director'              => 'Gary Halvorson',
                 'featured_character_id' => $rachel ? $rachel->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BMjEzMDMxNjQ5NF5BMl5BanBnXkFtZTgwNjY4MjQxMjE@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with the Cop',
@@ -124,6 +133,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.8,
                 'director'              => 'Andrew Tsao',
                 'featured_character_id' => $ross ? $ross->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BMjMwNjYzODQxOF5BMl5BanBnXkFtZTgwNzY4MjQxMjE@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with Chandler in a Box',
@@ -134,6 +144,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.0,
                 'director'              => 'Peter Bonerz',
                 'featured_character_id' => $chandler ? $chandler->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BN2I4NTkxNGYtYzg5Yi00YzE4LTllMzItNmQ3ZWE2MDIxOWM4XkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The Last One (Part 1 & 2)',
@@ -144,6 +155,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 9.7,
                 'director'              => 'Kevin S. Bright',
                 'featured_character_id' => $rachel ? $rachel->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BMTM1MTg5MDMxMF5BMl5BanBnXkFtZTcwMjgyNTAzMQ@@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with Joey\'s New Girlfriend',
@@ -154,6 +166,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.5,
                 'director'              => 'Gary Halvorson',
                 'featured_character_id' => $joey ? $joey->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BYzE3ZmNlZTctMTQ0OC00ZjlkLTliNDYtNzFkNzBjMTc3MjE1XkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with Unagi',
@@ -164,6 +177,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.8,
                 'director'              => 'Gary Halvorson',
                 'featured_character_id' => $ross ? $ross->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BNjQzNDI2NTU4Ml5BMl5BanBnXkFtZTgwODY4MjQxMjE@._V1_.jpg',
             ],
             [
                 'title'                 => 'The One with Monica\'s Thunder',
@@ -174,6 +188,7 @@ class EpisodeSeeder extends Seeder
                 'imdb_rating'           => 8.7,
                 'director'              => 'Kevin S. Bright',
                 'featured_character_id' => $monica ? $monica->id : null,
+                'image_url'             => 'https://m.media-amazon.com/images/M/MV5BODc5MjYyNjgtYTM5MC00ZDgxLTk5YzgtYjAwMmM4ZGQxMDYxXkEyXkFqcGdeQXVyNjcwMzEzMTU@._V1_.jpg',
             ],
         ];
 
