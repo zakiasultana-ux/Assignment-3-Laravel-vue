@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic meta setup -->
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, width=device-width">
 
     <title>Friends DB</title>
 
-    <!-- Fonts and main stylesheet -->
     <link href="https://fonts.googleapis.com/css?family=Lato%7CRaleway" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
 
-    <!-- External libraries -->
     <script defer src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <script defer src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-    <!-- Main app script (must be defer, NOT type="module", so Vue global is available) -->
     <script defer src="js/main.js"></script>
 </head>
 <body>
 
-<div id="app"> <!-- Vue root -->
+<div id="app"> 
 
-    <!-- Header with navigation -->
     <header>
         <div class="logo">FR<span>I</span>ENDS <span class="logo-sub">DB</span></div>
         <nav>
@@ -40,7 +35,6 @@
         <p class="hero-sub" ref="heroSub">Explore characters, episodes, and relationships.</p>
     </section>
 
-    <!-- Tabs bar -->
     <div class="tabs-bar">
         <button class="tab-btn" :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">👤 Characters</button>
         <button class="tab-btn" :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">🎬 Episodes</button>
@@ -49,10 +43,8 @@
 
     <main>
 
-        <!-- Characters -->
         <section v-if="activeTab === 'characters'">
 
-            <!-- Loading / error states -->
             <div v-if="loading.characters" class="state-msg">
                 <div class="spinner"></div>
                 <h3>Loading characters…</h3>
@@ -64,7 +56,6 @@
                 <p>{{ error.characters }}</p>
             </div>
 
-            <!-- Characters list -->
             <div v-else class="characters-grid">
                 <div
                     class="character-card"
@@ -73,29 +64,25 @@
                     @click="openModal(char)"
                 >
                     <div class="char-avatar">
-                        <span class="initials">{{ initials(char.name) }}</span>
+                        <img
+                            v-if="char.image_url"
+                            :src="char.image_url"
+                            :alt="char.name"
+                            class="char-img"
+                            @error="$event.target.style.display='none'"
+                        >
+                        <span class="initials" v-else>{{ initials(char.name) }}</span>
                     </div>
 
                     <div class="char-body">
                         <div class="char-name">{{ char.name }}</div>
-                        <div class="char-job">{{ char.occupation }}</div>
-                        <p class="char-desc">{{ char.bio }}</p>
-
-                        <!-- Personality tags -->
-                        <div class="personality-tags">
-                            <span class="tag" v-for="trait in (char.catchphrase ? [char.catchphrase] : [])" :key="trait">
-                                {{ trait }}
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Episodes -->
         <section v-if="activeTab === 'episodes'">
 
-            <!-- Loading / error states -->
             <div v-if="loading.episodes" class="state-msg">
                 <div class="spinner"></div>
                 <h3>Loading episodes…</h3>
@@ -107,7 +94,6 @@
                 <p>{{ error.episodes }}</p>
             </div>
 
-            <!-- Episodes list -->
             <div v-else class="episodes-list">
                 <div class="episode-card" v-for="ep in episodes" :key="ep.id">
                     <div class="ep-badge">
@@ -119,7 +105,6 @@
                         <p>{{ ep.description }}</p>
                     </div>
 
-                    <!-- Rating -->
                     <div class="ep-rating">
                         <div class="stars">{{ ratingStars(ep.imdb_rating) }}</div>
                         <div class="rating-num">{{ ep.imdb_rating }}</div>
@@ -128,10 +113,8 @@
             </div>
         </section>
 
-        <!-- Relationships -->
         <section v-if="activeTab === 'relationships'">
 
-            <!-- Loading / error states -->
             <div v-if="loading.relationships" class="state-msg">
                 <div class="spinner"></div>
                 <h3>Loading relationships…</h3>
@@ -143,7 +126,6 @@
                 <p>{{ error.relationships }}</p>
             </div>
 
-            <!-- Relationships list -->
             <div v-else class="relations-grid">
                 <div class="relation-card" v-for="rel in relationships" :key="rel.id">
                     <div class="rel-icon">{{ relationIcon(rel.status) }}</div>
@@ -158,24 +140,43 @@
 
     </main>
 
-    <!-- Character modal -->
     <div class="modal-overlay" v-if="selectedChar" @click.self="closeModal">
         <div class="modal">
+            <button class="modal-close-x" @click="closeModal" aria-label="Close">✕</button>
+
             <div class="modal-header">
-                <div class="modal-avatar">{{ initials(selectedChar.name) }}</div>
+                <div class="modal-avatar">
+                    <img
+                        v-if="selectedChar.image_url"
+                        :src="selectedChar.image_url"
+                        :alt="selectedChar.name"
+                        class="modal-img"
+                        @error="$event.target.style.display='none'"
+                    >
+                    <span v-else>{{ initials(selectedChar.name) }}</span>
+                </div>
                 <div class="modal-title">
                     <h2>{{ selectedChar.name }}</h2>
-                    <p>{{ selectedChar.occupation }}</p>
+                    <p class="modal-occupation">{{ selectedChar.occupation }}</p>
                 </div>
             </div>
 
             <div class="modal-body">
-                <p>{{ selectedChar.bio }}</p>
+                <div class="modal-detail-row" v-if="selectedChar.actor_name">
+                    <span class="modal-label">Played by</span>
+                    <span class="modal-value">{{ selectedChar.actor_name }}</span>
+                </div>
 
-                <div class="personality-tags">
-                    <span class="tag" v-for="trait in (selectedChar.catchphrase ? [selectedChar.catchphrase] : [])" :key="trait">
-                        {{ trait }}
-                    </span>
+                <div class="modal-detail-row" v-if="selectedChar.episodes_count != null">
+                    <span class="modal-label">Episodes</span>
+                    <span class="modal-value">{{ selectedChar.episodes_count }}</span>
+                </div>
+
+                <p class="modal-bio" v-if="selectedChar.bio">{{ selectedChar.bio }}</p>
+
+                <div class="personality-tags" v-if="selectedChar.catchphrase">
+                    <span class="modal-label">Catchphrase</span>
+                    <span class="tag">"{{ selectedChar.catchphrase }}"</span>
                 </div>
 
                 <button class="close-btn" @click="closeModal">Close</button>
@@ -183,7 +184,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <strong>Friends DB</strong> · Vue 3 + Laravel API
     </footer>
