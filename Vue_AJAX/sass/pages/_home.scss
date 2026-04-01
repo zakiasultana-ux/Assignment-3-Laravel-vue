@@ -175,7 +175,7 @@ main {
     overflow: hidden;
     cursor: pointer;
     transition: transform .3s, box-shadow .3s;
-    opacity: 0;
+    opacity: 1;
     transform: translateY(24px);
 
     &:hover {
@@ -260,7 +260,7 @@ main {
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 1.25rem;
-    opacity: 0;
+    opacity: 1;
     transform: translateX(-20px);
     transition: transform .3s, box-shadow .3s;
 
@@ -327,7 +327,7 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
-    opacity: 0;
+    opacity: 1;
     transform: scale(.95);
     transition: transform .3s, box-shadow .3s;
 
