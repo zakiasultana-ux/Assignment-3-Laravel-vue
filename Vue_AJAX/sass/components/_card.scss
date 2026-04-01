@@ -77,27 +77,3 @@
     line-height: 1.65;
     margin: 1rem 0;
     font-size: .95rem;
-}
- 
-/* === IMAGE SUPPORT === */
-.char-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-    display: block;
-}
- 
-.modal-avatar {
-    overflow: hidden;
-    background: rgba(255,255,255,.15);
-}
- 
-.modal-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-    display: block;
-    border-radius: 50%;
-}
