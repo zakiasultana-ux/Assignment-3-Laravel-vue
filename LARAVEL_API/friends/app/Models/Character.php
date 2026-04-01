@@ -17,6 +17,7 @@ class Character extends Model
         'occupation',
         'bio',
         'catchphrase',
+        'image_url',
     ];
 
     /**

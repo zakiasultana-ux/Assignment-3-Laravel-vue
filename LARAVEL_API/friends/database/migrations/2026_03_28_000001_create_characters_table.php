@@ -20,6 +20,7 @@ class CreateCharactersTable extends Migration
             $table->string('occupation')->nullable();
             $table->text('bio')->nullable();
             $table->string('catchphrase')->nullable();
+            $table->string('image_url')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
