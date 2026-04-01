@@ -21,313 +21,122 @@ async function apiFetch(url) {
 const app = Vue.createApp({
     data() {
         return {
-            // Friends data
-            activeTab: 'episodes',
-            
-            // Episodes
-            allEpisodes: [],
-            filteredEpisodes: [],
-            loadingEpisodes: true,
-            episodeError: null,
-            selectedEpisode: null,
-            loadingEpisodeDetail: false,
-            episodeDetailError: null,
-            episodeSearch: '',
-            episodeSeason: '',
-            episodeMinRating: '',
-            episodeCharacterId: '',
+            activeTab: 'characters',
 
-            // Characters
-            allCharacters: [],
-            filteredCharacters: [],
-            mainCharacters: [],
-            loadingCharacters: true,
-            characterError: null,
-            selectedCharacter: null,
-            loadingCharacterDetail: false,
-            characterDetailError: null,
-            characterSearch: '',
-            characterOccupation: '',
-            characterActor: '',
+            characters: [],
+            selectedChar: null,
 
-            // States
+            episodes: [],
+
+            relationships: [],
+
             loading: {
-                characters: true,
-                episodes: false,
+                characters:    true,
+                episodes:      false,
                 relationships: false,
-                books: true,
-                bookDetails: false
             },
-
             error: {
-                characters: null,
-                episodes: null,
+                characters:    null,
+                episodes:      null,
                 relationships: null,
-                books: null
             },
-
-            selectedChar: null
         };
     },
 
     created() {
-        // Initial loads
-        this.fetchEpisodes();
         this.fetchCharacters();
     },
 
+    mounted() {
+        gsap.to(this.$refs.eyebrow,   { opacity: 1, y: 0, duration: 0.6, delay: 0.1 });
+        gsap.to(this.$refs.heroTitle, { opacity: 1, y: 0, duration: 0.6, delay: 0.3 });
+        gsap.to(this.$refs.heroSub,   { opacity: 1, y: 0, duration: 0.6, delay: 0.5 });
+    },
+
     watch: {
-        // Lazy load tabs
         activeTab(tab) {
-            if (tab === 'episodes' && !this.episodes.length) {
-                this.fetchData('episodes');
+            if (tab === 'episodes' && this.episodes.length === 0 && !this.loading.episodes) {
+                this.fetchEpisodes();
             }
-            if (tab === 'relationships' && !this.relationships.length) {
-                this.fetchData('relationships');
+            if (tab === 'relationships' && this.relationships.length === 0 && !this.loading.relationships) {
+                this.fetchRelationships();
             }
         }
     },
 
     methods: {
-        // EPISODES
-        fetchEpisodes() {
-            this.loadingEpisodes = true;
-            this.episodeError = null;
-            apiFetch(`${BASE_URL}/episodes`)
-                .then(json => {
-                    this.allEpisodes = json.data || [];
-                    this.filteredEpisodes = [...this.allEpisodes];
-                    this.$nextTick(() => this.animateList(this.$refs.episodeList, '.episode-card'));
-                })
-                .catch(err => { this.episodeError = err.message; })
-                .finally(() => { this.loadingEpisodes = false; });
-        },
-        filterEpisodes() {
-            const params = new URLSearchParams();
-            if (this.episodeSearch)      params.set('search', this.episodeSearch);
-            if (this.episodeSeason)      params.set('season', this.episodeSeason);
-            if (this.episodeMinRating)   params.set('min_rating', this.episodeMinRating);
-            if (this.episodeCharacterId) params.set('featured_character_id', this.episodeCharacterId);
-            apiFetch(`${BASE_URL}/episodes?${params.toString()}`)
-                .then(json => {
-                    this.filteredEpisodes = json.data || [];
-                    this.$nextTick(() => this.animateList(this.$refs.episodeList, '.episode-card'));
-                })
-                .catch(err => { this.episodeError = err.message; });
+
+        switchTab(tab) {
+            this.activeTab = tab;
         },
 
-        selectEpisode(id) {
-            this.loadingEpisodeDetail = true;
-            this.episodeDetailError = null;
-            this.selectedEpisode = null;
-            apiFetch(`${BASE_URL}/episodes/${id}`)
-                .then(json => {
-                    if (!json.data) throw new Error('Episode not found.');
-                    this.selectedEpisode = json.data;
-                    this.$nextTick(() => {
-                        const panel = this.$refs.episodeDetail;
-                        if (panel) {
-                            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            gsap.fromTo(panel,
-                                { opacity: 0, y: 30 },
-                                { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
-                            );
-                        }
-                    });
-                })
-                .catch(err => { this.episodeDetailError = err.message; })
-                .finally(() => { this.loadingEpisodeDetail = false; });
+        animateCards(selector) {
+            this.$nextTick(() => {
+                const cards = document.querySelectorAll(selector);
+                if (cards.length === 0) return;
+                gsap.to(cards, {
+                    opacity: 1,
+                    y: 0,
+                    x: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    stagger: 0.07,
+                    ease: 'power2.out',
+                });
+            });
         },
-        // CHARACTERS
+
         fetchCharacters() {
-            this.loadingCharacters = true;
-            this.characterError = null;
+            this.loading.characters = true;
+            this.error.characters   = null;
+
             apiFetch(`${BASE_URL}/characters`)
                 .then(json => {
-                    this.allCharacters = json.data || [];
-                    this.filteredCharacters = [...this.allCharacters];
-                    // First 6 are the seeded main cast — use for dropdown
-                    this.mainCharacters = this.allCharacters.slice(0, 6);
-                    this.$nextTick(() => this.animateList(this.$refs.characterGrid, '.char-card'));
+                    this.characters = json.data || [];
+                    this.animateCards('.character-card');
                 })
-                .catch(err => { this.characterError = err.message; })
-                .finally(() => { this.loadingCharacters = false; });
+                .catch(err => {
+                    this.error.characters = err.message;
+                })
+                .finally(() => {
+                    this.loading.characters = false;
+                });
         },
 
-        filterCharacters() {
-            const params = new URLSearchParams();
-            if (this.characterSearch)     params.set('search', this.characterSearch);
-            if (this.characterOccupation) params.set('occupation', this.characterOccupation);
-            if (this.characterActor)      params.set('actor_name', this.characterActor);
-            apiFetch(`${BASE_URL}/characters?${params.toString()}`)
+        fetchEpisodes() {
+            this.loading.episodes = true;
+            this.error.episodes   = null;
+
+            apiFetch(`${BASE_URL}/episodes`)
                 .then(json => {
-                    this.filteredCharacters = json.data || [];
-                    this.$nextTick(() => this.animateList(this.$refs.characterGrid, '.char-card'));
+                    this.episodes = json.data || [];
+                    this.animateCards('.episode-card');
                 })
-                .catch(err => { this.characterError = err.message; });
+                .catch(err => {
+                    this.error.episodes = err.message;
+                })
+                .finally(() => {
+                    this.loading.episodes = false;
+                });
         },
 
-        selectCharacter(id) {
-            this.loadingCharacterDetail = true;
-            this.characterDetailError = null;
-            this.selectedCharacter = null;
-            apiFetch(`${BASE_URL}/characters/${id}`)
+        fetchRelationships() {
+            this.loading.relationships = true;
+            this.error.relationships   = null;
+
+            apiFetch(`${BASE_URL}/relationships`)
                 .then(json => {
-                    if (!json.data) throw new Error('Character not found.');
-                    this.selectedCharacter = json.data;
-                    this.$nextTick(() => {
-                        const panel = this.$refs.characterDetail;
-                        if (panel) {
-                            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            gsap.fromTo(panel,
-                                { opacity: 0, y: 30 },
-                                { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
-                            );
-                        }
-                    });
-                })
-                .catch(err => { this.characterDetailError = err.message; })
-                .finally(() => { this.loadingCharacterDetail = false; });
-        },
-        viewCharacterFromEpisode(character) {
-            this.switchTab('characters');
-            this.$nextTick(() => this.selectCharacter(character.id));
-        },
-
-        switchToEpisode(ep) {
-            this.switchTab('episodes');
-            this.$nextTick(() => this.selectEpisode(ep.id));
-        },
-        // GSAP animations
-        animateList(parentRef, childSelector) {
-            if (!parentRef) return;
-            const items = parentRef.querySelectorAll(childSelector);
-            if (!items.length) return;
-            gsap.fromTo(items,
-                { opacity: 0, y: 15 },
-                { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: 'power1.out' }
-            );
-        },
-        // ── Generic API fetch (Friends) ─────────────
-        fetchData(resource) {
-            this.loading[resource] = true;
-            this.error[resource] = null;
-
-            fetch(`http://localhost/friends/public/api/${resource}`)
-                .then(res => {
-                    if (!res.ok) throw new Error(`Failed to fetch ${resource}`);
-                    return res.json();
-                })
-                .then(data => {
-                    this[resource] = data.data ?? data;
+                    this.relationships = json.data || [];
+                    this.animateCards('.relation-card');
                 })
                 .catch(err => {
-                    this.error[resource] = err.message;
+                    this.error.relationships = err.message;
                 })
                 .finally(() => {
-                    this.loading[resource] = false;
+                    this.loading.relationships = false;
                 });
         },
 
-        // ── Books list ─────────────
-        getBooks() {
-            this.loading.books = true;
-            this.error.books = null;
-
-            fetch("http://xp-bar.ca/api/books")
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to fetch books');
-                    return res.json();
-                })
-                .then(books => {
-                    this.booksData = books.data;
-                })
-                .catch(err => {
-                    this.error.books = err.message;
-                })
-                .finally(() => {
-                    this.loading.books = false;
-                });
-        },
-
-        // ── Book details ─────────────
-        getBook(id) {
-            this.loading.bookDetails = true;
-            this.selectedBooks = null;
-            this.error.books = null;
-
-            fetch(`http://xp-bar.ca/api/books/${id}`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to fetch book details');
-                    return res.json();
-                })
-                .then(book => {
-                    const data = book.data;
-
-                    if (!data) {
-                        throw new Error('Book not found');
-                    }
-
-                    this.selectedBooks = {
-                        author: data.author?.name || "Not available",
-                        published: data.published || "Not available",
-                        description: data.description || "Not available",
-                        image_url: data.image_url || ""
-                    };
-
-                    // Scroll + animation
-                    this.$nextTick(() => {
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-
-                        if (window.gsap && this.$refs.bookInfoCon) {
-                            gsap.from(this.$refs.bookInfoCon, {
-                                opacity: 0,
-                                y: 20,
-                                duration: 1
-                            });
-                        }
-                    });
-                })
-                .catch(err => {
-                    this.error.books = err.message;
-                })
-                .finally(() => {
-                    this.loading.bookDetails = false;
-                });
-        },
-
-        // ── Helpers ─────────────
-        initials(name) {
-            return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-        },
-
-        parsedPersonality(p) {
-            if (!p) return [];
-            if (Array.isArray(p)) return p;
-            try { return JSON.parse(p); }
-            catch { return p.split(',').map(s => s.trim()); }
-        },
-
-        ratingStars(r) {
-            const full = Math.round(r / 2);
-            return '★'.repeat(full) + '☆'.repeat(5 - full);
-        },
-
-        relationIcon(status) {
-            const map = {
-                'Romantic': '💕',
-                'Married': '💍',
-                'Best Friends': '🤝',
-                'Siblings': '👫',
-                'Close Friends': '💛',
-            };
-            return map[status] || '🙂';
-        },
-
-        // ── Modal ─────────────
         openModal(char) {
             this.selectedChar = char;
         },
@@ -336,5 +145,26 @@ const app = Vue.createApp({
             this.selectedChar = null;
         },
 
+        initials(name) {
+            if (!name) return '?';
+            return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        },
+
+        ratingStars(r) {
+            if (r == null) return '☆☆☆☆☆';
+            const full = Math.round(r / 2);
+            return '★'.repeat(full) + '☆'.repeat(5 - full);
+        },
+
+        relationIcon(status) {
+            const map = {
+                'Romantic':     '💕',
+                'Married':      '💍',
+                'Best Friends': '🤝',
+                'Siblings':     '👫',
+                'Close Friends':'💛',
+            };
+            return map[status] || '🙂';
+        },
     }
-}).mount("#app");
+}).mount('#app');

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CharacterSeeder::class,
             EpisodeSeeder::class,
+            RelationshipSeeder::class,
         ]);
     }
 }
