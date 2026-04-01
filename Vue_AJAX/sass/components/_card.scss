@@ -29,7 +29,7 @@
     right: 1rem;
     background: rgba(255,255,255,.15);
     border: none;
-    color: #fff;
+    color: abstracts.$card-bg;
     font-size: 1rem;
     width: 32px;
     height: 32px;
@@ -65,15 +65,16 @@
     font-size: .75rem;
     letter-spacing: .5px;
     text-transform: uppercase;
-    color: #6b5bcd;
+    color: abstracts.$purple;
     min-width: 90px;
 }
 .modal-value {
     font-size: .92rem;
-    color: #1a1a2e;
+    color: abstracts.$dark;
 }
 .modal-bio {
-    color: #7a7a9a;
+    color: abstracts.$muted;
     line-height: 1.65;
     margin: 1rem 0;
     font-size: .95rem;
+}

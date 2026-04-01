@@ -90,7 +90,8 @@ const app = Vue.createApp({
             this.loading.characters = true;
             this.error.characters   = null;
 
-            apiFetch(`${BASE_URL}/characters`)
+            fetch(`${BASE_URL}/characters`)
+                .then(response => response.json())
                 .then(json => {
                     this.characters = json.data || [];
                     this.animateCards('.character-card');
@@ -107,7 +108,8 @@ const app = Vue.createApp({
             this.loading.episodes = true;
             this.error.episodes   = null;
 
-            apiFetch(`${BASE_URL}/episodes`)
+            fetch(`${BASE_URL}/episodes`)
+                .then(response => response.json())
                 .then(json => {
                     this.episodes = json.data || [];
                     this.animateCards('.episode-card');
@@ -124,7 +126,8 @@ const app = Vue.createApp({
             this.loading.relationships = true;
             this.error.relationships   = null;
 
-            apiFetch(`${BASE_URL}/relationships`)
+            fetch(`${BASE_URL}/relationships`)
+                .then(response => response.json())
                 .then(json => {
                     this.relationships = json.data || [];
                     this.animateCards('.relation-card');
