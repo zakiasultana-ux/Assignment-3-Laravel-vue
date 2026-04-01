@@ -12,7 +12,7 @@
     <script defer src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <script defer src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-   
+
     <script defer src="js/main.js"></script>
 </head>
 <body>
@@ -64,7 +64,14 @@
                     @click="openModal(char)"
                 >
                     <div class="char-avatar">
-                        <span class="initials">{{ initials(char.name) }}</span>
+                        <img
+                            v-if="char.image_url"
+                            :src="char.image_url"
+                            :alt="char.name"
+                            class="char-img"
+                            @error="$event.target.style.display='none'"
+                        >
+                        <span class="initials" v-else>{{ initials(char.name) }}</span>
                     </div>
 
                     <div class="char-body">
@@ -138,7 +145,16 @@
             <button class="modal-close-x" @click="closeModal" aria-label="Close">✕</button>
 
             <div class="modal-header">
-                <div class="modal-avatar">{{ initials(selectedChar.name) }}</div>
+                <div class="modal-avatar">
+                    <img
+                        v-if="selectedChar.image_url"
+                        :src="selectedChar.image_url"
+                        :alt="selectedChar.name"
+                        class="modal-img"
+                        @error="$event.target.style.display='none'"
+                    >
+                    <span v-else>{{ initials(selectedChar.name) }}</span>
+                </div>
                 <div class="modal-title">
                     <h2>{{ selectedChar.name }}</h2>
                     <p class="modal-occupation">{{ selectedChar.occupation }}</p>
@@ -159,7 +175,9 @@
                 <p class="modal-bio" v-if="selectedChar.bio">{{ selectedChar.bio }}</p>
 
                 <div class="personality-tags" v-if="selectedChar.catchphrase">
-                    <span class="modal-label" style="width:100%; margin-bottom:.4rem;">Catchphrase</span>
+
+                    <span class="modal-label">Catchphrase</span>
+
                     <span class="tag">"{{ selectedChar.catchphrase }}"</span>
                 </div>
 
